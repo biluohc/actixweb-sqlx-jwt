@@ -1,0 +1,45 @@
+[package]
+name = "actixweb-sqlx-template"
+version = "0.1.0"
+authors = ["Wspsxing <biluohc@qq.com>"]
+edition = "2018"
+
+# reference: https://github.com/emreyalvac/actix-web-jwt
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+vergen = "3.1"
+
+[features]
+default = [ "mysql" ]
+postgres = [ "sqlx/postgres"]
+sqlite = [ "sqlx/sqlite"]
+mysql = [ "sqlx/mysql"]
+
+[dependencies.sqlx]
+version = "0.3.5"
+default-features = false
+features = [ "runtime-tokio", "macros", "chrono", "bigdecimal", "uuid", "json" ]
+
+[dependencies]
+log = "0.4"
+structopt = "0.3.14"
+loge = {version = "0.4", default-features = false, features = ["colored", "chrono"]}
+uuid = { version = "0.8", features = ["serde", "v4"] }
+chrono =  { version = "0.4.9", features = ["serde"] }
+bigdecimal = { version = "0.1.2", features = ["serde"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+json5 = "0.2"
+ring = "0.16"
+bcrypt = "0.8"
+hex = "0.4.2"
+jsonwebtoken = "7.1.0"
+mobc-redis = "0.5.1"
+mobc = "0.5.7"
+actix-web = "3.0.0-alpha.2"
+actix-rt = "1.1.1"
+lazy_static = "1.4.0"
+async-trait = "0.1"
+futures = "0.3.5"
+anyhow = "1"
