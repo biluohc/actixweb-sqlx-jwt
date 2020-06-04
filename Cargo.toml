@@ -1,5 +1,5 @@
 [package]
-name = "actixweb-sqlx-template"
+name = "actixweb-sqlx-jwt"
 version = "0.1.0"
 authors = ["Wspsxing <biluohc@qq.com>"]
 edition = "2018"
@@ -29,6 +29,7 @@ uuid = { version = "0.8", features = ["serde", "v4"] }
 chrono =  { version = "0.4.9", features = ["serde"] }
 bigdecimal = { version = "0.1.2", features = ["serde"] }
 serde = { version = "1", features = ["derive"] }
+serde_qs = "0.6"
 serde_json = "1"
 json5 = "0.2"
 ring = "0.16"

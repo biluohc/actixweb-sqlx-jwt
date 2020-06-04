@@ -6,7 +6,7 @@ use crate::state::AppState;
 
 use actix_web::{get, post, web, HttpRequest, Responder};
 
-// curl --data '{"name": "avx", "email": "avx@spark.com", "password": "avx512sha"}' -H "Content-Type: application/json" -X POST localhost:8080/user/register
+// curl -v --data '{"name": "Bob", "email": "Bob@google.com", "password": "Bobpass"}' -H "Content-Type: application/json" -X POST localhost:8080/user/register
 #[post("/register")]
 async fn register(form: web::Json<Register>, state: AppState) -> impl Responder {
     let form = form.into_inner();
@@ -23,7 +23,7 @@ async fn register(form: web::Json<Register>, state: AppState) -> impl Responder 
     }
 }
 
-// curl --data '{"name": "avx", "email": "avx@spark.com", "password": "avx512sha"}' -H "Content-Type: application/json" -X POST localhost:8080/user/login
+// curl -v --data '{"name": "Bob", "email": "Bob@google.com", "password": "Bobpass"}' -H "Content-Type: application/json" -X POST localhost:8080/user/login
 #[post("/login")]
 async fn login(form: web::Json<Login>, state: AppState) -> impl Responder {
     let form = form.into_inner();
@@ -38,9 +38,9 @@ async fn login(form: web::Json<Login>, state: AppState) -> impl Responder {
             if form.verify(&user.pass) {
                 let exp: DateTime<Utc> = Utc::now()
                     + if form.rememberme {
-                        Duration::days(32)
+                        Duration::days(30)
                     } else {
-                        Duration::hours(2)
+                        Duration::hours(1)
                     };
 
                 let my_claims = Claims {
@@ -67,6 +67,8 @@ async fn login(form: web::Json<Login>, state: AppState) -> impl Responder {
     }
 }
 
+// curl -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJCb2IiLCJleHAiOjE1OTEyNDYwOTR9.O1dbYu3tqiIi6I8OUlixLuj9dp-1tLl4mjmXZ0ve6uo' localhost:8080/user/userInfo |jq .
+// curl 'localhost:8080/user/userInfo?access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJCb2IiLCJleHAiOjE1OTEyNTYxNDd9.zJKlZOozYfq-xMXO89kjUyme6SA8_eziacqt5gvXj2U' |jq .
 #[get("/userInfo")]
 async fn user_informations(
     _req: HttpRequest,

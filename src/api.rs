@@ -1,7 +1,9 @@
 use serde::Serialize;
 use std::borrow::Cow;
 
-use actix_web::{error, Error, HttpRequest, HttpResponse, Responder};
+use actix_web::{
+    error, http::StatusCode, Error, HttpRequest, HttpResponse, Responder, ResponseError,
+};
 use futures::future::{ready, Ready};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -34,7 +36,11 @@ impl<T: Serialize> ApiResult<T> {
         self.data = Some(data);
         self
     }
-    pub fn to_resp(&self, req: &HttpRequest) -> HttpResponse {
+    pub fn log_to_resp(&self, req: &HttpRequest) -> HttpResponse {
+        self.log(req);
+        self.to_resp()
+    }
+    pub fn log(&self, req: &HttpRequest) {
         info!(
             "{} \"{} {} {:?}\" {}",
             req.peer_addr().unwrap(),
@@ -43,7 +49,8 @@ impl<T: Serialize> ApiResult<T> {
             req.version(),
             self.code
         );
-
+    }
+    pub fn to_resp(&self) -> HttpResponse {
         let resp = match serde_json::to_string(self) {
             Ok(json) => HttpResponse::Ok()
                 .content_type("application/json")
@@ -52,6 +59,23 @@ impl<T: Serialize> ApiResult<T> {
         };
 
         resp
+    }
+}
+
+use std::fmt::{self, Debug, Display};
+impl<T: Debug + Serialize> Display for ApiResult<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+pub type ApiError = ApiResult<()>;
+impl<T: Debug + Serialize> ResponseError for ApiResult<T> {
+    fn status_code(&self) -> StatusCode {
+        StatusCode::OK
+    }
+    fn error_response(&self) -> HttpResponse {
+        self.to_resp()
     }
 }
 
@@ -90,7 +114,7 @@ impl<T: Serialize> Responder for &ApiResult<T> {
     type Future = Ready<Result<HttpResponse, Error>>;
 
     fn respond_to(self, req: &HttpRequest) -> Self::Future {
-        ready(Ok(self.to_resp(req)))
+        ready(Ok(self.log_to_resp(req)))
     }
 }
 
@@ -101,7 +125,7 @@ pub fn json_error_handler<E: std::fmt::Display + std::fmt::Debug + 'static>(
 ) -> error::Error {
     let detail = err.to_string();
     let api = ApiResult::new().with_data(()).code(400).with_msg(detail);
-    let response = api.to_resp(req);
+    let response = api.log_to_resp(req);
 
     error::InternalError::from_response(err, response).into()
 }

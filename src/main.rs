@@ -28,6 +28,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .data(state.clone())
+            .app_data(state.clone())
             .app_data(web::PathConfig::default().error_handler(api::json_error_handler))
             .app_data(web::JsonConfig::default().error_handler(api::json_error_handler))
             .app_data(web::QueryConfig::default().error_handler(api::json_error_handler))
@@ -36,7 +37,6 @@ async fn main() -> std::io::Result<()> {
                 actix_web::http::ContentEncoding::Br,
             ))
             .wrap(middleware::Logger::default())
-            .wrap(middlewares::auth::JwtAuth)
             .default_service(web::route().to(api::notfound))
             .service(web::scope("/user").configure(users::routes::init))
     })

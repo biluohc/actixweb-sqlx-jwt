@@ -33,6 +33,7 @@ impl Config {
             kv,
         })
     }
+    // generate and show config string
     pub fn show() {
         let de: Self = Default::default();
         println!("{}", serde_json::to_string_pretty(&de).unwrap())

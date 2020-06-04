@@ -29,6 +29,8 @@ pub struct User {
     pub name: String,
     // pub phone: String,
     pub email: String,
+    // not return password
+    #[serde(skip_serializing)]
     pub pass: String,
     pub create_dt: SqlDateTime,
     pub update_dt: SqlDateTime,
