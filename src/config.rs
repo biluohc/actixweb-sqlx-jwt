@@ -74,23 +74,61 @@ pub struct Opt {
 }
 
 impl Opt {
-    pub fn parse_from_args() -> Self {
+    pub fn parse_from_args() -> (JoinHandle, Self) {
         use structopt::StructOpt;
 
         let opt: Self = Opt::from_args();
 
         let level = match opt.verbose {
-            0 => "warn",
-            1 => "info",
-            2 => "debug",
-            _more => "trace",
+            0 => LevelFilter::Warn,
+            1 => LevelFilter::Info,
+            2 => LevelFilter::Debug,
+            _more => LevelFilter::Trace,
         };
 
-        std::env::set_var("RUST_LOG", level);
-        std::env::set_var("LOGE_FORMAT", "target");
-        loge::init();
+        let formater = BaseFormater::new()
+            .local(true)
+            .color(true)
+            .level(4)
+            .formater(format);
+        let filter = BaseFilter::new()
+            .starts_with(true)
+            .notfound(true)
+            .max_level(level);
+
+        let handle = NonblockLogger::new()
+            .filter(filter)
+            .unwrap()
+            .formater(formater)
+            .log_to_stdout()
+            .map_err(|e| eprintln!("failed to init nonblock_logger: {:?}", e))
+            .unwrap();
 
         info!("opt: {:?}", opt);
-        opt
+
+        (handle, opt)
     }
+}
+
+use nonblock_logger::{
+    log::{LevelFilter, Record},
+    BaseFilter, BaseFormater, FixedLevel, JoinHandle, NonblockLogger,
+};
+
+pub fn format(base: &BaseFormater, record: &Record) -> String {
+    let level = FixedLevel::with_color(record.level(), base.color_get())
+        .length(base.level_get())
+        .into_colored()
+        .into_coloredfg();
+
+    format!(
+        "[{} {}#{}:{} {}] {}\n",
+        chrono::Local::now().format("%Y-%m-%d %H:%M:%S.%3f"),
+        level,
+        record.module_path().unwrap_or("*"),
+        // record.file().unwrap_or("*"),
+        record.line().unwrap_or(0),
+        nonblock_logger::current_thread_name(),
+        record.args()
+    )
 }

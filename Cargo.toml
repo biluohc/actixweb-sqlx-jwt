@@ -22,9 +22,8 @@ default-features = false
 features = [ "runtime-tokio", "macros", "chrono", "bigdecimal", "uuid", "json" ]
 
 [dependencies]
-log = "0.4"
-structopt = "0.3.14"
-loge = {version = "0.4", default-features = false, features = ["colored", "chrono"]}
+structopt = "0.3"
+nonblock-logger = { version = "0.1.5", default-features = false, features = ["color", "dbg"] }
 uuid = { version = "0.8", features = ["serde", "v4"] }
 chrono =  { version = "0.4.9", features = ["serde"] }
 bigdecimal = { version = "0.1.2", features = ["serde"] }

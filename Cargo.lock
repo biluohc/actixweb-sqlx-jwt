@@ -276,10 +276,9 @@ dependencies = [
  "json5",
  "jsonwebtoken",
  "lazy_static",
- "log",
- "loge",
  "mobc",
  "mobc-redis",
+ "nonblock-logger",
  "ring",
  "serde",
  "serde_json",
@@ -681,6 +680,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ba125de2af0df55319f41944744ad91c71113bf74a4646efff39afe1f6842db1"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "crossbeam-channel"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cced8691919c02aac3cb0a1bc2e9b73d89e832bf9a06fc579d4e71b68a2da061"
+dependencies = [
+ "crossbeam-utils",
+ "maybe-uninit",
 ]
 
 [[package]]
@@ -1212,19 +1221,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "loge"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "be4395abe09a6d3708feafc1272f67ab87cf4ea1072b70cc2d0ee69434aae4e5"
-dependencies = [
- "atty",
- "chrono",
- "colored",
- "log",
- "winapi 0.3.8",
-]
-
-[[package]]
 name = "lru-cache"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1250,6 +1246,12 @@ name = "matches"
 version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ffc5c5338469d4d3ea17d269fa8ea3512ad247247c30bd2df69e68309ed0a08"
+
+[[package]]
+name = "maybe-uninit"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "60302e4db3a61da70c0cb7991976248362f30319e88850c487b9b95bbf059e00"
 
 [[package]]
 name = "md-5"
@@ -1375,6 +1377,18 @@ dependencies = [
  "cfg-if",
  "libc",
  "winapi 0.3.8",
+]
+
+[[package]]
+name = "nonblock-logger"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d2842921bfaa9cb84bb546e504a3c504a2db737d76ca7358bc469f0f42242ad3"
+dependencies = [
+ "chrono",
+ "colored",
+ "crossbeam-channel",
+ "log",
 ]
 
 [[package]]
