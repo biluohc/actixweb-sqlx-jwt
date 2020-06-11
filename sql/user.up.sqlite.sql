@@ -1,10 +1,12 @@
+-- locl: (datetime('now','localtime'))
+-- https://stackoverflow.com/questions/57052204/utc-time-wrong-in-sqlite
 create table users (
     id INTEGER primary key AUTOINCREMENT not null,
     name text UNIQUE not null,
     email char(20) UNIQUE not null,
     pass char(65) not null, -- 'passwd hash'
-    create_dt text not null default current_timestamp, -- '创建时间'
-    update_dt text not null default current_timestamp -- '更新时间'
+    create_dt text not null default (datetime('now')), -- '创建时间'
+    update_dt text not null default (datetime('now')) -- '更新时间'
     -- status char(10) not null default 'nomal' -- '状态, 正常: normal, 封禁: blocked',
 );
 

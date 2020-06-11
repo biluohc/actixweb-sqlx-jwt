@@ -1,10 +1,11 @@
+-- local: timestamp
 create table users (
     id serial primary key,
     name varchar(10) UNIQUE not null,
     email varchar(20) UNIQUE not null,
     pass varchar(65) not null, -- 'passwd hash'
-    create_dt timestamp not null default current_timestamp, -- '创建时间'
-    update_dt timestamp not null default current_timestamp -- '更新时间'
+    create_dt timestamptz not null default current_timestamp, -- '创建时间'
+    update_dt timestamptz not null default current_timestamp -- '更新时间'
     -- status char(10) not null default 'nomal' -- '状态, 正常: normal, 封禁: blocked',
 );
 

@@ -15,11 +15,12 @@ type SqlID = u64;
 #[cfg(any(feature = "sqlite", feature = "postgres"))]
 type SqlID = i32;
 
-// Extend derive(FromRow): https://github.com/launchbadge/sqlx/issues/156
-#[cfg(any(feature = "mysql"))]
+// time_zone: https://github.com/launchbadge/sqlx/issues/329
+#[cfg(any(feature = "mysql", feature = "postgres"))]
 type SqlDateTime = chrono::DateTime<chrono::Utc>;
-#[cfg(any(feature = "postgres"))]
-type SqlDateTime = chrono::NaiveDateTime;
+// type SqlDateTime = chrono::NaiveDateTime;
+
+// Extend derive(FromRow): https://github.com/launchbadge/sqlx/issues/156
 #[cfg(any(feature = "sqlite"))]
 type SqlDateTime = String;
 

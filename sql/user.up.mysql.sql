@@ -1,3 +1,4 @@
+-- local: datetime(3)
 create table users (
     id serial primary key,
     name char(10) UNIQUE not null,
