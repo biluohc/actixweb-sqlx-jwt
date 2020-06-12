@@ -40,6 +40,7 @@ async fn main() -> std::io::Result<()> {
             .default_service(web::route().to(api::notfound))
             .service(web::scope("/user").configure(users::routes::init))
     })
+    .keep_alive(300)
     .bind(&state2.config.listen)?
     .run()
     .await
