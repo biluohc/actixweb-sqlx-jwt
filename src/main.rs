@@ -7,6 +7,7 @@ extern crate sqlx;
 #[macro_use]
 extern crate serde;
 
+use actix_files::Files;
 use actix_web::{middleware, web, App, HttpServer};
 
 pub mod api;
@@ -39,6 +40,12 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::default())
             .default_service(web::route().to(api::notfound))
             .service(web::scope("/user").configure(users::routes::init))
+            .service(
+                Files::new("/static", "target")
+                    .redirect_to_slash_directory()
+                    .show_files_listing()
+                    .use_last_modified(true),
+            )
     })
     .keep_alive(300)
     .bind(&state2.config.listen)?
