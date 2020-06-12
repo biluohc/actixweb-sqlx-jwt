@@ -2,6 +2,8 @@
 extern crate nonblock_logger;
 #[macro_use]
 extern crate async_trait;
+// #[macro_use]
+// extern crate anyhow;
 #[macro_use]
 extern crate sqlx;
 #[macro_use]
@@ -12,6 +14,7 @@ use actix_web::{middleware, web, App, HttpServer};
 
 pub mod api;
 pub mod config;
+pub mod how;
 pub mod middlewares;
 pub mod models;
 pub mod state;

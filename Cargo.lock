@@ -307,6 +307,8 @@ dependencies = [
  "serde_qs",
  "sqlx",
  "structopt",
+ "thiserror",
+ "tokio",
  "uuid",
  "vergen",
 ]
