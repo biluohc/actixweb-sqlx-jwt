@@ -24,3 +24,10 @@ curl 'localhost:8080/user/userInfo?access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1
 
 ## Notice
 1. The sqlx query macros needs to be connected to the database represented by DATABASE_URL in .env, or you can consider using the unchecked version instead.
+
+### References
+1. actix-web: https://github.com/actix/actix-web
+2. sqlx: https://github.com/launchbadge/sqlx
+2. actix documentation: https://actix.rs/docs/
+2. actix-web-jwt with mongodb: https://github.com/emreyalvac/actix-web-jwt
+2. actix-examples: https://github.com/actix/examples
