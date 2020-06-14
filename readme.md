@@ -25,6 +25,24 @@ curl 'localhost:8080/user/userInfo?access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1
 ## Notice
 1. The sqlx query macros needs to be connected to the database represented by DATABASE_URL in .env, or you can consider using the unchecked version instead.
 
+## Redis: No Redis does not affect the program running now
+1. Use docker to start a Redis quickly
+```bash
+docker run --name redis-6379 --network host -d redis redis-server --port 6379 --bind 127.0.0.1 --appendonly  no  # --requirepass pw
+
+# pip3 install iredis
+
+# iredis/redis-cli -p 6379 # -a pw
+```
+2. The Redis client crates, current is mobc.
+    1. [redis-rs](https://github.com/mitsuhiko/redis-rs): The most used Redis client.
+    1. [mobc](https://github.com/importcjj/mobc): An asynchronous connection pool.
+    1. [deadpool](https://github.com/bikeshedder/deadpool): An asynchronous connection pool.
+    1. [actix-redis](https://github.com/actix/actix-extras/tree/master/actix-redis): Redis integration for actix framework base on redis-async-rs.
+    1. [bb8](https://crates.io/crates/bb8): An asynchronous connection pool provides the same configuration options as r2d2.
+    2. [r2d2](https://github.com/sfackler/r2d2): A synchronized connection pool, not recommended.
+    3. [redis-async-rs](https://github.com/benashford/redis-async-rs): Another Redis client.
+
 ### References
 1. actix-web: https://github.com/actix/actix-web
 2. sqlx: https://github.com/launchbadge/sqlx

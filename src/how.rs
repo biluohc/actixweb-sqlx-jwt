@@ -1,4 +1,5 @@
 use mobc_redis::redis::RedisError;
+use sqlx::Error as SqlxError;
 use tokio::time::Elapsed;
 
 pub use anyhow::Error as AnyError;
@@ -14,7 +15,7 @@ pub enum Error {
     #[error("Redis error: {0}")]
     Redis(#[from] RedisError),
     #[error("Sqlx error: {0}")]
-    Sqlx(#[from] sqlx::Error),
+    Sqlx(#[from] SqlxError),
     #[error("Timout error: {0}")]
     Timout(#[from] Elapsed),
 }

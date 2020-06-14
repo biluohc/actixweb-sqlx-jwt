@@ -13,6 +13,7 @@ create table users (
 
 -- docker run -it -d --name postgresql -e POSTGRES_USER=template -e POSTGRES_DB=templatedb  -e POSTGRES_PASSWORD=MTcwNzUyNzIzMDY4Nzk2MzQ3Mjg= -p 5432:5432  postgres:12
 
+-- libpg-dev/postgresql-devel
 -- pip3 install pgcli
 -- pgcli postgres://template:MTcwNzUyNzIzMDY4Nzk2MzQ3Mjg=@localhost:5432/templatedb
 -- create table users
