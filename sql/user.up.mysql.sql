@@ -4,9 +4,9 @@ create table users (
     name char(10) UNIQUE not null,
     email char(20) UNIQUE not null comment 'email address',
     pass char(65) not null comment 'passwd hash',
-    create_dt timestamp not null default current_timestamp comment '创建时间',
-    update_dt timestamp not null default current_timestamp comment '更新时间'
-    -- status char(10) not null default 'nomal' comment '状态, 正常: normal, 封禁: blocked',
+    create_dt timestamp not null default current_timestamp comment 'create datetime',
+    update_dt timestamp not null default current_timestamp on update current_timestamp comment 'update datetime'
+    -- status char(10) not null default 'nomal' comment 'status: normal, blocked',
 );
 
 
