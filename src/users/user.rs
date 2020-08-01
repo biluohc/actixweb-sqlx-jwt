@@ -12,7 +12,9 @@ fn passhash_verify(name: &str, pass: &str, hash: &str) -> bool {
 
 #[cfg(any(feature = "mysql"))]
 type SqlID = u64;
-#[cfg(any(feature = "sqlite", feature = "postgres"))]
+#[cfg(any(feature = "postgres"))]
+type SqlID = i64;
+#[cfg(any(feature = "sqlite"))]
 type SqlID = i32;
 
 // time_zone: https://github.com/launchbadge/sqlx/issues/329

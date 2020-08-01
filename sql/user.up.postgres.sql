@@ -1,6 +1,6 @@
 -- local: timestamp
 create table users (
-    id serial primary key,
+    id serial8 primary key,
     name varchar(10) UNIQUE not null,
     email varchar(20) UNIQUE not null,
     pass varchar(65) not null, -- 'passwd hash'
