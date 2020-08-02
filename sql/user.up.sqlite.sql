@@ -1,12 +1,13 @@
 -- local: (datetime('now','localtime'))
+-- UTC: (datetime('now')
 -- https://stackoverflow.com/questions/57052204/utc-time-wrong-in-sqlite
 create table users (
     id INTEGER primary key AUTOINCREMENT not null,
     name text UNIQUE not null,
     email char(20) UNIQUE not null,
     pass char(65) not null, -- 'passwd hash'
-    create_dt text not null default (datetime('now')), -- 'create datetime'
-    update_dt text not null default (datetime('now')) -- 'update datetime'
+    create_dt datetime not null default (datetime('now','localtime')), -- 'create datetime'
+    update_dt datetime not null default (datetime('now','localtime')) -- 'update datetime'
     -- status char(10) not null default 'nomal' -- 'status: normal, blocked',
 );
 

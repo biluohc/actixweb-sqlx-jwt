@@ -12,6 +12,14 @@ pub struct Config {
     pub jwt_priv: String,
 }
 
+#[serde(rename_all = "camelCase")]
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
+struct DbOptions {
+    timeout: u64,
+    #[serde(default)]
+    server_timezone: String,
+}
+
 impl Config {
     pub fn parse_from_file(file: &PathBuf) -> Self {
         use std::fs::read_to_string;
@@ -22,7 +30,44 @@ impl Config {
     }
     pub async fn into_state(self) -> AppStateRaw {
         info!("config: {:?}", self);
-        let sql = SqlPool::new(&self.sql).await.expect("sql open");
+        let mut pool_options = PoolOptions::new();
+
+        if let Some(opstr) = url::Url::parse(&self.sql)
+            .expect("Invalid SqlDB URL")
+            .query()
+        {
+            if let Some(ops) = serde_qs::from_str::<DbOptions>(opstr)
+                .map_err(|e| error!("serde_qs::from_str::<DbOptions> failed: {}", e))
+                .ok()
+            {
+                pool_options =
+                    pool_options.connect_timeout(std::time::Duration::from_secs(ops.timeout));
+
+                if !ops.server_timezone.is_empty() {
+                    let key = if cfg!(feature = "mysql") {
+                        "@@session.time_zone ="
+                    } else if cfg!(feature = "postgres") {
+                        "TIME ZONE"
+                    } else {
+                        panic!("sqlite can't set timezone!")
+                    };
+                    // UTC, +00:00, HongKong, etc
+                    let set = format!("SET {} '{}'", key, ops.server_timezone.clone());
+
+                    // cannot move out of `set_str`, a captured variable in an `Fn` closure
+                    let set_str = unsafe { std::mem::transmute::<_, &'static str>(set.as_str()) };
+                    std::mem::forget(set);
+                    pool_options = pool_options.after_connect(move |conn| {
+                        Box::pin(async move {
+                            use crate::sqlx::Executor;
+                            conn.execute(set_str).await.map(|_| ())
+                        })
+                    })
+                }
+            }
+        }
+
+        let sql = pool_options.connect(&self.sql).await.expect("sql open");
         let kvm =
             RedisConnectionManager::new(Client::open(self.redis.clone()).expect("redis open"));
         let kv = KvPool::builder().build(kvm);
@@ -94,7 +139,8 @@ impl Opt {
         let filter = BaseFilter::new()
             .starts_with(true)
             .notfound(true)
-            .max_level(level);
+            .max_level(level)
+            .chain("sqlx", LevelFilter::Warn);
 
         let handle = NonblockLogger::new()
             .filter(filter)

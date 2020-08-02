@@ -1,11 +1,12 @@
 -- local: datetime(3)
+-- UTC: timestamp
 create table users (
     id serial primary key,
     name char(10) UNIQUE not null,
     email char(20) UNIQUE not null comment 'email address',
     pass char(65) not null comment 'passwd hash',
-    create_dt timestamp not null default current_timestamp comment 'create datetime',
-    update_dt timestamp not null default current_timestamp on update current_timestamp comment 'update datetime'
+    create_dt datetime(3) not null default current_timestamp(3) comment 'create datetime',
+    update_dt datetime(3) not null default current_timestamp(3) on update current_timestamp(3) comment 'update datetime'
     -- status char(10) not null default 'nomal' comment 'status: normal, blocked',
 );
 

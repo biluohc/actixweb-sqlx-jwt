@@ -12,19 +12,11 @@ fn passhash_verify(name: &str, pass: &str, hash: &str) -> bool {
 
 #[cfg(any(feature = "mysql"))]
 type SqlID = u64;
-#[cfg(any(feature = "postgres"))]
+#[cfg(any(feature = "postgres", feature = "sqlite"))]
 type SqlID = i64;
-#[cfg(any(feature = "sqlite"))]
-type SqlID = i32;
-
-// time_zone: https://github.com/launchbadge/sqlx/issues/329
-#[cfg(any(feature = "mysql", feature = "postgres"))]
-type SqlDateTime = chrono::DateTime<chrono::Utc>;
-// type SqlDateTime = chrono::NaiveDateTime;
 
 // Extend derive(FromRow): https://github.com/launchbadge/sqlx/issues/156
-#[cfg(any(feature = "sqlite"))]
-type SqlDateTime = String;
+type SqlDateTime = chrono::NaiveDateTime;
 
 #[derive(FromRow, Serialize, Deserialize, Debug)]
 pub struct User {
