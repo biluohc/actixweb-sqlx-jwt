@@ -49,3 +49,4 @@ docker run --name redis-6379 --network host -d redis redis-server --port 6379 --
 2. actix documentation: https://actix.rs/docs/
 2. actix-web-jwt with mongodb: https://github.com/emreyalvac/actix-web-jwt
 2. actix-examples: https://github.com/actix/examples
+2. an instance: https://github.com/biluohc/KeepStats
