@@ -95,22 +95,22 @@ pub fn version_with_gitif() -> &'static str {
     )
 }
 
-#[derive(structopt::StructOpt, Debug)]
+#[derive(clap::Clap, Debug)]
 // #[structopt(name = "template")]
-#[structopt(version = version_with_gitif())]
-pub struct Opt {
+#[clap(version = version_with_gitif())]
+pub struct Opts {
     // /// Activate debug mode
     // #[structopt(short, long)]
     // debug: bool,
 
     // The number of occurrences of the `v/verbose` flag
     /// Verbose mode (-v, -vv, -vvv, etc.)
-    #[structopt(short, long, parse(from_occurrences))]
+    #[clap(short, long, parse(from_occurrences))]
     pub verbose: u8,
 
     /// Output file
-    #[structopt(
-        short = "c",
+    #[clap(
+        short = 'c',
         long = "config",
         parse(from_os_str),
         default_value = "template.json"
@@ -118,11 +118,10 @@ pub struct Opt {
     pub config: PathBuf,
 }
 
-impl Opt {
+impl Opts {
     pub fn parse_from_args() -> (JoinHandle, Self) {
-        use structopt::StructOpt;
-
-        let opt: Self = Opt::from_args();
+        use clap::Clap;
+        let opt: Self = Opts::parse();
 
         let level = match opt.verbose {
             0 => LevelFilter::Warn,

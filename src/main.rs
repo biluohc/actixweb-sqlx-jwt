@@ -20,12 +20,12 @@ pub mod models;
 pub mod state;
 pub mod users;
 
-use config::{Config, Opt};
+use config::{Config, Opts};
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     // Config::show();
-    let (_handle, opt) = Opt::parse_from_args();
+    let (_handle, opt) = Opts::parse_from_args();
     let state = Config::parse_from_file(&opt.config).into_state().await;
     let state2 = state.clone();
 
