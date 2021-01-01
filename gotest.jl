@@ -35,7 +35,7 @@ function test(kind::String)
         code = read(pipeline(`curl -s $authuri`, `jq -r .code`), String) |> strip
         @test code == "200"
     catch e
-        @error "test api failed: $e"
+        @error "test api for $kind failed: $e"
     finally
         println()
         kill(proc)

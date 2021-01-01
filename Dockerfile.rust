@@ -1,0 +1,32 @@
+From debian:10.0 as builder
+WORKDIR /opt
+
+# # mirror and timezone fot china
+# RUN set -eux; \
+#     sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list; \
+#     sed -i 's|security.debian.org/debian-security|mirrors.ustc.edu.cn/debian-security|g' /etc/apt/sources.list; \
+#     ln -sfv /usr/share/zoneinfo/Hongkong /etc/localtime; \
+#     echo Hongkong > /etc/timezone; 
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y \
+    sudo \
+    curl \
+    gcc \
+    file \
+    git \
+    pkg-config \
+    libssl-dev \
+    zlib1g-dev \
+    libsasl2-dev \
+    cmake \
+    g++; \
+    apt-get clean; \
+    rm -rf /var/lib/apt
+
+# # nightly-2020-09-24 or 1.49.0
+RUN set -eux; \
+    curl -sSf https://sh.rustup.rs | sh -s -- -y --profile=minimal --default-toolchain=1.49.0
+
+ENV PATH="/root/.cargo/bin:${PATH}"

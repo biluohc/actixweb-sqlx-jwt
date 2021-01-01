@@ -96,19 +96,15 @@ pub fn version_with_gitif() -> &'static str {
 }
 
 #[derive(clap::Clap, Debug)]
-// #[structopt(name = "template")]
+// #[clap(name = "template")]
 #[clap(version = version_with_gitif())]
 pub struct Opts {
-    // /// Activate debug mode
-    // #[structopt(short, long)]
-    // debug: bool,
-
     // The number of occurrences of the `v/verbose` flag
     /// Verbose mode (-v, -vv, -vvv, etc.)
     #[clap(short, long, parse(from_occurrences))]
     pub verbose: u8,
 
-    /// Output file
+    /// Config file
     #[clap(
         short = 'c',
         long = "config",

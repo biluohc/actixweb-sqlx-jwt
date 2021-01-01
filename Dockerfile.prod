@@ -1,0 +1,31 @@
+From debian:10
+WORKDIR /opt
+
+ARG APP=actixweb-sqlx-jwt
+
+# # mirror and timezone fot china
+# RUN set -eux; \
+#     sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list; \
+#     sed -i 's|security.debian.org/debian-security|mirrors.ustc.edu.cn/debian-security|g' /etc/apt/sources.list; \
+#     ln -sfv /usr/share/zoneinfo/Hongkong /etc/localtime; \
+#     echo Hongkong > /etc/timezone; 
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y \
+    tzdata \
+    libssl-dev; \
+    apt-get clean; \
+    rm -rf /var/lib/apt
+
+COPY ./target/release/${APP} /usr/local/bin/
+
+ENV APP=${APP}
+
+RUN $APP -V
+
+CMD $APP -v
+
+# docker build -t template-prod:latest -f Dockerfile.prod .
+# docker run --rm -it --network host -v $PWD:/opt --name template template-prod actixweb-sqlx-jwt -V
+# docker run -d --restart always --network host -v $PWD:/opt --name template template-prod
