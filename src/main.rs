@@ -44,7 +44,7 @@ async fn main() -> std::io::Result<()> {
             .default_service(web::route().to(api::notfound))
             .service(web::scope("/user").configure(users::routes::init))
             .service(
-                Files::new("/static", "target")
+                Files::new("/assets", "assets")
                     .redirect_to_slash_directory()
                     .show_files_listing()
                     .use_last_modified(true),

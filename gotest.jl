@@ -4,6 +4,9 @@
 exec julia --color=yes -e 'include(popfirst!(ARGS))' \
     "${BASH_SOURCE[0]}" "$@" =#
 
+
+using Test
+
 checkout() = run(`git checkout -f .env Cargo.toml template.json`)
 
 bd = read(pipeline(`cargo metadata --format-version 1`, `jq -r .target_directory`), String) |> strip
@@ -14,12 +17,30 @@ function test(kind::String)
 
     run(`cargo build --release`)
     proc = run(`$bd/release/actixweb-sqlx-jwt -v`, wait=false)
+    # wait server startup
     sleep(1)
 
-    success(`curl 0.0.0.0:8080/static`) || @warn("Test for $kind failed")
-    kill(proc)
+    try
+        run(`curl 0.0.0.0:8080/assets`)
+        run(`curl -s --data '{"name": "Bob", "email": "Bob@google.com", "password": "Bobpass"}' -H "Content-Type: application/json" -X POST localhost:8080/user/register`)
 
-    clean()
+        jwt = read(pipeline(`curl -s --data '{"name": "Bob", "email": "Bob@google.com", "password": "Bobpass"}' -H "Content-Type: application/json" -X POST localhost:8080/user/login`, `jq -r .data`), String) |> strip
+        @test length(jwt) > 100
+
+        authead = "Authorization: Bearer $jwt"
+        code = read(pipeline(`curl -sH $authead localhost:8080/user/userInfo`, `jq -r .code`), String) |> strip
+        @test code == "200"
+
+        authuri = "localhost:8080/user/userInfo?access_token=$jwt"
+        code = read(pipeline(`curl -s $authuri`, `jq -r .code`), String) |> strip
+        @test code == "200"
+    catch e
+        @error "test api failed: $e"
+    finally
+        println()
+        kill(proc)
+        clean()
+    end
 end
 
 function test_and_checkout(kind::String)
