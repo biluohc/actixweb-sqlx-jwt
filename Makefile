@@ -18,8 +18,10 @@ docker_file_prod = Dockerfile.prod
 image_rust = ${app}-rust
 image_prod = ${app}-prod
 
-$(info src: $(src_path)) # println
-$(info mode: $(target)) # println
+# println
+$(info src: $(src_path))
+$(info commit: $(commit_id))
+$(info mode: $(target))
 
 $(shell mkdir -p ${HOME}/.cargo/{git,registry})
 $(shell touch ${HOME}/.cargo/config)
