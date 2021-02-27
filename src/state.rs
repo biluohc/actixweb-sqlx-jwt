@@ -1,4 +1,5 @@
-pub use mobc_redis::{redis, Connection, RedisConnectionManager};
+pub use mobc_redis::{redis, RedisConnectionManager};
+pub type Connection = mobc::Connection<RedisConnectionManager>;
 pub type KvPool = mobc::Pool<RedisConnectionManager>;
 
 #[cfg(any(feature = "mysql"))]

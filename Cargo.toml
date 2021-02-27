@@ -6,8 +6,9 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+# https://docs.rs/vergen/4.1.0/vergen/
 [build-dependencies]
-vergen = "3.1.0"
+vergen = { version = "4.1.0", features = [ "git" ] }
 
 [features]
 default = [ "mysql" ]
@@ -16,7 +17,7 @@ sqlite = [ "sqlx/sqlite"]
 mysql = [ "sqlx/mysql"]
 
 [dependencies.sqlx]
-version = "0.4.2"
+version = "0.5.1"
 default-features = false
 features = [ "runtime-actix-rustls", "macros", "chrono", "decimal", "uuid", "json" ]
 # git = "https://github.com/launchbadge/sqlx"
@@ -24,7 +25,7 @@ features = [ "runtime-actix-rustls", "macros", "chrono", "decimal", "uuid", "jso
 
 [dependencies]
 clap = "3.0.0-beta.2"
-tokio = { version = "0.2.23", default-features = false, features = ["rt-core", "rt-util", "io-driver", "tcp", "uds", "udp", "time", "signal", "stream"] } # copy from actix-rt
+tokio = { version = "1.2", features = ["rt", "net", "parking_lot", "signal", "sync", "time"] } # copy from actix-rt
 nonblock-logger = { version = "0.1.6", default-features = false, features = ["color", "dbg"] }
 uuid = { version = "0.8.1", features = ["serde", "v4"] }
 chrono =  { version = "0.4.15", features = ["serde"] }
@@ -37,11 +38,11 @@ ring = "0.16.15"
 bcrypt = "0.9.0"
 hex = "0.4.2"
 jsonwebtoken = "7.2.0"
-mobc-redis = "0.5.3"
-mobc = "0.5.12"
-actix-web = "3.2.0"
-actix-files = "0.5.0"
-actix-rt = "1.1.1"
+mobc-redis = "0.7.0"
+mobc = "0.7.0"
+actix-web = "4.0.0-beta.1"
+actix-files = "0.6.0-beta.1"
+actix-rt = "2.0.0"
 lazy_static = "1.4.0"
 async-trait = "0.1.38"
 futures = "0.3.5"

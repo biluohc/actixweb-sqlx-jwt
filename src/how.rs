@@ -1,6 +1,6 @@
 use mobc_redis::redis::RedisError;
 use sqlx::Error as SqlxError;
-use tokio::time::Elapsed;
+use tokio::time::error::Elapsed;
 
 pub use anyhow::Error as AnyError;
 pub use anyhow::Result as AnyResult;

@@ -4,7 +4,6 @@ use std::borrow::Cow;
 use actix_web::{
     error, http::StatusCode, Error, HttpRequest, HttpResponse, Responder, ResponseError,
 };
-use futures::future::{ready, Ready};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ApiResult<T = ()> {
@@ -90,10 +89,7 @@ where
     T: Serialize,
     R: AsRef<ApiResult<T>>,
 {
-    type Error = Error;
-    type Future = Ready<Result<HttpResponse, Error>>;
-
-    fn respond_to(self, req: &HttpRequest) -> Self::Future {
+    fn respond_to(self, req: &HttpRequest) -> HttpResponse {
         match self {
             ApiRt::Ref(a) => a.as_ref().respond_to(req),
             ApiRt::T(b) => b.respond_to(req),
@@ -102,19 +98,13 @@ where
 }
 
 impl<T: Serialize> Responder for ApiResult<T> {
-    type Error = Error;
-    type Future = Ready<Result<HttpResponse, Error>>;
-
-    fn respond_to(self, req: &HttpRequest) -> Self::Future {
+    fn respond_to(self, req: &HttpRequest) -> HttpResponse {
         (&self).respond_to(req)
     }
 }
 impl<T: Serialize> Responder for &ApiResult<T> {
-    type Error = Error;
-    type Future = Ready<Result<HttpResponse, Error>>;
-
-    fn respond_to(self, req: &HttpRequest) -> Self::Future {
-        ready(Ok(self.log_to_resp(req)))
+    fn respond_to(self, req: &HttpRequest) -> HttpResponse {
+        self.log_to_resp(req)
     }
 }
 

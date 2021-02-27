@@ -1,7 +1,7 @@
 use super::user::*;
 use crate::state::AppState;
 
-use sqlx::Done;
+// use sqlx::Done;
 
 #[async_trait]
 pub trait IUser {
