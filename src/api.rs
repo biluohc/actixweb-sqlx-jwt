@@ -1,16 +1,16 @@
 use serde::Serialize;
 use std::borrow::Cow;
 
-use actix_web::{
-    error, http::StatusCode, Error, HttpRequest, HttpResponse, Responder, ResponseError,
-};
+pub use salvo::http::{header, Mime, Request, Response, StatusCode};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ApiResult<T = ()> {
-    pub code: i32,
+    pub code: u16,
     pub msg: Option<Cow<'static, str>>,
     pub data: Option<T>,
 }
+
+pub type ApiError = ApiResult<()>;
 
 impl<T: Serialize> ApiResult<T> {
     pub fn new() -> Self {
@@ -20,7 +20,7 @@ impl<T: Serialize> ApiResult<T> {
             data: None,
         }
     }
-    pub fn code(mut self, code: i32) -> Self {
+    pub fn code(mut self, code: u16) -> Self {
         self.code = code;
         self
     }
@@ -35,29 +35,25 @@ impl<T: Serialize> ApiResult<T> {
         self.data = Some(data);
         self
     }
-    pub fn log_to_resp(&self, req: &HttpRequest) -> HttpResponse {
-        self.log(req);
-        self.to_resp()
-    }
-    pub fn log(&self, req: &HttpRequest) {
-        info!(
-            "{} \"{} {} {:?}\" {}",
-            req.peer_addr().unwrap(),
-            req.method(),
-            req.uri(),
-            req.version(),
-            self.code
-        );
-    }
-    pub fn to_resp(&self) -> HttpResponse {
-        let resp = match serde_json::to_string(self) {
-            Ok(json) => HttpResponse::Ok()
-                .content_type("application/json")
-                .body(json),
-            Err(e) => Error::from(e).into(),
-        };
 
-        resp
+    pub fn apply_to_res(&self, res: &mut Response) {
+        let mime = "application/json; charset=utf-8"
+            .parse()
+            .expect("default mime invalid");
+        res.headers_mut().insert(header::CONTENT_TYPE, mime);
+        let json = serde_json::to_string(&self).expect("ApiResult to json");
+        // info!("json: {}", json);
+
+        let mut code = self.code;
+        loop {
+            if code >= 1000 {
+                code /= 10;
+            } else {
+                break;
+            }
+        }
+        res.set_status_code(StatusCode::from_u16(code).expect("StatusCode invalid"));
+        res.render_json_text(json.as_str());
     }
 }
 
@@ -68,63 +64,9 @@ impl<T: Debug + Serialize> Display for ApiResult<T> {
     }
 }
 
-pub type ApiError = ApiResult<()>;
-impl<T: Debug + Serialize> ResponseError for ApiResult<T> {
-    fn status_code(&self) -> StatusCode {
-        StatusCode::OK
+#[async_trait]
+impl<T: Serialize + Send> salvo::Writer for ApiResult<T> {
+    async fn write(mut self, _req: &mut Request, _depot: &mut salvo::Depot, res: &mut Response) {
+        self.apply_to_res(res)
     }
-    fn error_response(&self) -> HttpResponse {
-        self.to_resp()
-    }
-}
-
-// Either and AsRef/Responder not in crate
-pub enum ApiRt<L, R> {
-    Ref(L),
-    T(R),
-}
-
-impl<T, R> Responder for ApiRt<R, ApiResult<T>>
-where
-    T: Serialize,
-    R: AsRef<ApiResult<T>>,
-{
-    fn respond_to(self, req: &HttpRequest) -> HttpResponse {
-        match self {
-            ApiRt::Ref(a) => a.as_ref().respond_to(req),
-            ApiRt::T(b) => b.respond_to(req),
-        }
-    }
-}
-
-impl<T: Serialize> Responder for ApiResult<T> {
-    fn respond_to(self, req: &HttpRequest) -> HttpResponse {
-        (&self).respond_to(req)
-    }
-}
-impl<T: Serialize> Responder for &ApiResult<T> {
-    fn respond_to(self, req: &HttpRequest) -> HttpResponse {
-        self.log_to_resp(req)
-    }
-}
-
-// return 200 all
-pub fn json_error_handler<E: std::fmt::Display + std::fmt::Debug + 'static>(
-    err: E,
-    req: &HttpRequest,
-) -> error::Error {
-    let detail = err.to_string();
-    let api = ApiResult::new().with_data(()).code(400).with_msg(detail);
-    let response = api.log_to_resp(req);
-
-    error::InternalError::from_response(err, response).into()
-}
-
-pub async fn notfound(req: HttpRequest) -> Result<HttpResponse, Error> {
-    let api = ApiResult::new()
-        .with_data(())
-        .code(404)
-        .with_msg("route not found");
-
-    api.respond_to(&req).await
 }

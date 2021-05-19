@@ -9,49 +9,50 @@ extern crate sqlx;
 #[macro_use]
 extern crate serde;
 
-use actix_files::Files;
-use actix_web::{middleware, web, App, HttpServer};
-
 pub mod api;
 pub mod config;
+pub mod handlers;
 pub mod how;
 pub mod middlewares;
 pub mod models;
 pub mod state;
-pub mod users;
 
 use config::{Config, Opts};
+use salvo::prelude::*;
 
-#[actix_rt::main]
-async fn main() -> std::io::Result<()> {
+fn main() {
+    use std::sync::atomic::*;
+
+    tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .thread_name_fn(|| {
+            static ATOMIC_ID: AtomicUsize = AtomicUsize::new(0);
+            let id = ATOMIC_ID.fetch_add(1, Ordering::SeqCst);
+            format!("tok-{:02}", id)
+        })
+        .build()
+        .expect("build tokio runtime")
+        .block_on(fun())
+}
+
+// #[tokio::main]
+async fn fun() {
     // Config::show();
     let (_handle, opt) = Opts::parse_from_args();
     let state = Config::parse_from_file(&opt.config).into_state().await;
-    let state2 = state.clone();
 
-    HttpServer::new(move || {
-        App::new()
-            .data(state.clone())
-            .app_data(state.clone())
-            .app_data(web::PathConfig::default().error_handler(api::json_error_handler))
-            .app_data(web::JsonConfig::default().error_handler(api::json_error_handler))
-            .app_data(web::QueryConfig::default().error_handler(api::json_error_handler))
-            .app_data(web::FormConfig::default().error_handler(api::json_error_handler))
-            .wrap(middleware::Compress::new(
-                actix_web::http::ContentEncoding::Br,
-            ))
-            .wrap(middleware::Logger::default())
-            .default_service(web::route().to(api::notfound))
-            .service(web::scope("/user").configure(users::routes::init))
-            .service(
-                Files::new("/assets", "assets")
-                    .redirect_to_slash_directory()
-                    .show_files_listing()
-                    .use_last_modified(true),
-            )
-    })
-    .keep_alive(300)
-    .bind(&state2.config.listen)?
-    .run()
-    .await
+    let addr = state
+        .config
+        .listen
+        .parse::<std::net::SocketAddr>()
+        .map_err(|e| fatal!("parse listenAddr {} failed: {}", state.config.listen, e))
+        .unwrap();
+
+    state::global_state_init(state);
+    Server::new(handlers::router())
+        .with_catchers(middlewares::catcher::defaults::get())
+        .try_bind(addr)
+        .await
+        .map_err(|e| fatal!("listen {} failed: {}", addr, e))
+        .unwrap();
 }

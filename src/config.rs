@@ -4,16 +4,17 @@ use crate::state::{redis::Client, KvPool, RedisConnectionManager};
 use std::path::PathBuf;
 use std::sync::Arc;
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct Config {
-    pub sql: String,
-    pub redis: String,
+    pub db: String,
+    pub kv: String,
     pub listen: String,
     pub jwt_priv: String,
 }
 
+#[derive(Debug, Default, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
-#[derive(Debug, Deserialize, PartialEq, Serialize)]
 struct DbOptions {
     timeout: u64,
     #[serde(default)]
@@ -28,11 +29,11 @@ impl Config {
         let confstr = read_to_string(file).expect("confile read");
         json5::from_str(&confstr).expect("confile deser")
     }
-    pub async fn into_state(self) -> AppStateRaw {
+    pub async fn into_state(self) -> AppState {
         info!("config: {:?}", self);
         let mut pool_options = PoolOptions::new();
 
-        if let Some(opstr) = url::Url::parse(&self.sql)
+        if let Some(opstr) = url::Url::parse(&self.db)
             .expect("Invalid SqlDB URL")
             .query()
         {
@@ -67,20 +68,19 @@ impl Config {
             }
         }
 
-        let sql = pool_options.connect(&self.sql).await.expect("sql open");
-        let kvm =
-            RedisConnectionManager::new(Client::open(self.redis.clone()).expect("redis open"));
+        let db = pool_options.connect(&self.db).await.expect("sql open");
+        let kvm = RedisConnectionManager::new(Client::open(self.kv.clone()).expect("redis open"));
         let kv = KvPool::builder().build(kvm);
 
         Arc::new(State {
             config: self,
-            sql,
+            db,
             kv,
         })
     }
     // generate and show config string
     pub fn show() {
-        let de: Self = Default::default();
+        let de = Self::default();
         println!("{}", serde_json::to_string_pretty(&de).unwrap())
     }
 }
@@ -166,10 +166,25 @@ pub fn format(base: &BaseFormater, record: &Record) -> String {
         "[{} {}#{}:{} {}] {}\n",
         chrono::Local::now().format("%Y-%m-%d %H:%M:%S.%3f"),
         level,
-        record.module_path().unwrap_or("*"),
+        record.target(),
         // record.file().unwrap_or("*"),
         record.line().unwrap_or(0),
-        nonblock_logger::current_thread_name(),
+        current_thread_name(),
         record.args()
     )
+}
+
+pub fn current_thread_name() -> &'static str {
+    use std::*;
+    struct ThreadId(u64);
+
+    thread_local!(static THREAD_NAME: String = {
+        let thread = thread::current();
+        format!("{:2}.{}", unsafe { mem::transmute::<_, ThreadId>(thread.id()).0 }, thread.name()
+        .map(|s| s.to_owned())
+        // unamed thread, main has 4 chars, aligned
+        .unwrap_or_else(||"****".to_owned()))
+    });
+
+    THREAD_NAME.with(|tname| unsafe { mem::transmute::<&str, &'static str>(tname.as_str()) })
 }

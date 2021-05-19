@@ -11,24 +11,24 @@ fn passhash_verify(name: &str, pass: &str, hash: &str) -> bool {
 }
 
 #[cfg(any(feature = "mysql"))]
-type SqlID = u64;
+type DbID = u64;
 #[cfg(any(feature = "postgres", feature = "sqlite"))]
-type SqlID = i64;
+type DbID = i64;
 
 // Extend derive(FromRow): https://github.com/launchbadge/sqlx/issues/156
-type SqlDateTime = chrono::NaiveDateTime;
+type DbDateTime = chrono::NaiveDateTime;
 
 #[derive(FromRow, Serialize, Deserialize, Debug)]
 pub struct User {
-    pub id: SqlID,
+    pub id: DbID,
     pub name: String,
     // pub phone: String,
     pub email: String,
     // not return password
     #[serde(skip_serializing)]
     pub pass: String,
-    pub create_dt: SqlDateTime,
-    pub update_dt: SqlDateTime,
+    pub create_dt: DbDateTime,
+    pub update_dt: DbDateTime,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

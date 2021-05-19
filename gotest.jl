@@ -22,16 +22,16 @@ function test(kind::String)
 
     try
         run(`curl 0.0.0.0:8080/assets`)
-        run(`curl -s --data '{"name": "Bob", "email": "Bob@google.com", "password": "Bobpass"}' -H "Content-Type: application/json" -X POST localhost:8080/user/register`)
+        run(`curl -s --data '{"name": "Bob", "email": "Bob@google.com", "password": "Bobpass"}' -H "Content-Type: application/json" -X POST localhost:8080/api/user/register`)
 
-        jwt = read(pipeline(`curl -s --data '{"name": "Bob", "email": "Bob@google.com", "password": "Bobpass"}' -H "Content-Type: application/json" -X POST localhost:8080/user/login`, `jq -r .data`), String) |> strip
+        jwt = read(pipeline(`curl -s --data '{"name": "Bob", "email": "Bob@google.com", "password": "Bobpass"}' -H "Content-Type: application/json" -X POST localhost:8080/api/user/login`, `jq -r .data`), String) |> strip
         @test length(jwt) > 100
 
         authead = "Authorization: Bearer $jwt"
-        code = read(pipeline(`curl -sH $authead localhost:8080/user/userInfo`, `jq -r .code`), String) |> strip
+        code = read(pipeline(`curl -sH $authead localhost:8080/api/user/info`, `jq -r .code`), String) |> strip
         @test code == "200"
 
-        authuri = "localhost:8080/user/userInfo?access_token=$jwt"
+        authuri = "localhost:8080/api/user/info?access_token=$jwt"
         code = read(pipeline(`curl -s $authuri`, `jq -r .code`), String) |> strip
         @test code == "200"
     catch e
@@ -50,7 +50,7 @@ function test_and_checkout(kind::String)
     run(`sed -i "s/default\ =\ \[\ \"mysql\"\ \]/default = [ \"$kind\" ]/g" Cargo.toml `)
     kind == "mysql" || run(pipeline(`cat .env `, `grep $kind`, `sed  's/\#//gw .env'`))
 
-    json = read(pipeline(`cat template.json`, `grep -v sql`), String)
+    json = read(pipeline(`cat template.json`, `grep -v db`), String)
     db = read(pipeline(`cat template.json`, `grep $kind`, `sed 's/\/\/ //g'`), String)
     json2 = """{$db\n$(json[2:end])"""
     run(pipeline(`echo $json2`, `jq .`, `sed 'w template.json'`))

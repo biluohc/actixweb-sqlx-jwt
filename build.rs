@@ -1,12 +1,12 @@
-extern crate vergen;
-
-use vergen::{gen, ConstantsFlags};
+use vergen::*;
 
 fn main() {
-    // Setup the flags, toggling off the 'SEMVER_FROM_CARGO_PKG' flag
-    let mut flags = ConstantsFlags::all();
-    flags.toggle(ConstantsFlags::SEMVER_FROM_CARGO_PKG);
+    let mut conf = Config::default();
+    *conf.git_mut().rerun_on_head_change_mut() = true;
+    *conf.git_mut().commit_timestamp_kind_mut() = TimestampKind::DateOnly;
+    *conf.git_mut().sha_kind_mut() = ShaKind::Short;
+    *conf.git_mut().semver_kind_mut() = SemverKind::Lightweight;
+    *conf.git_mut().semver_dirty_mut() = Some("-dirty");
 
-    // Generate the 'cargo:' key output
-    gen(ConstantsFlags::all()).expect("Unable to generate the cargo keys!");
+    vergen(conf).expect("vergen failed")
 }

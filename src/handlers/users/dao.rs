@@ -1,8 +1,5 @@
-use super::user::*;
+use crate::models::user::*;
 use crate::state::AppState;
-
-// use sqlx::Done;
-
 #[async_trait]
 pub trait IUser {
     async fn user_add(&self, form: &Register) -> sqlx::Result<u64>;
@@ -24,7 +21,7 @@ impl IUser for AppState {
             form.email,
             passh
         )
-        .execute(&self.sql)
+        .execute(&self.db)
         .await
         .map(|d| d.rows_affected())
     }
@@ -38,7 +35,7 @@ impl IUser for AppState {
                 "#,
             name
         )
-        .fetch_one(&self.sql)
+        .fetch_one(&self.db)
         .await
     }
 }
@@ -58,7 +55,7 @@ impl IUser for AppState {
             form.email,
             passh
         )
-        .execute(&self.sql)
+        .execute(&self.db)
         .await
         .map(|d| d.rows_affected())
     }
@@ -72,7 +69,7 @@ impl IUser for AppState {
                 "#,
             name
         )
-        .fetch_one(&self.sql)
+        .fetch_one(&self.db)
         .await
     }
 }

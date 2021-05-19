@@ -1,8 +1,8 @@
 {
-    "sql": "mysql://root:MTcwNzUyNzIzMDY4Nzk2MzQ3Mjg=@sh1/templatedb?timeout=60&serverTimezone=Hongkong",
-    // "sql": "postgres://template:MTcwNzUyNzIzMDY4Nzk2MzQ3Mjg=@0.0.0.0:5432/templatedb?timeout=60&serverTimezone=Hongkong",
-    // "sql": "sqlite://./target/lite.db",
-    "redis": "redis://127.0.0.1",
+    "db": "mysql://root:MTcwNzUyNzIzMDY4Nzk2MzQ3Mjg=@sh1/templatedb?timeout=60&serverTimezone=Hongkong",
+    // "db": "postgres://template:MTcwNzUyNzIzMDY4Nzk2MzQ3Mjg=@0.0.0.0:5432/templatedb?timeout=60&serverTimezone=Hongkong",
+    // "db": "sqlite://./target/lite.db",
+    "kv": "redis://127.0.0.1",
     "listen": "0.0.0.0:8080",
-    "jwt_priv": "0xa06f853898a9dd4f32441a56879c52878f96c42730ed31c50e00"
+    "jwtPriv": "0xa06f853898a9dd4f32441a56879c52878f96c42730ed31c50e00"
 }
