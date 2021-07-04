@@ -31,7 +31,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .data(state.clone())
+            .app_data(web::Data::new(state.clone()))
             .app_data(state.clone())
             .app_data(web::PathConfig::default().error_handler(api::json_error_handler))
             .app_data(web::JsonConfig::default().error_handler(api::json_error_handler))

@@ -126,5 +126,5 @@ pub async fn notfound(req: HttpRequest) -> Result<HttpResponse, Error> {
         .code(404)
         .with_msg("route not found");
 
-    api.respond_to(&req).await
+    api.respond_to(&req).await.map(Into::into)
 }

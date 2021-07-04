@@ -12,8 +12,8 @@ pub struct Config {
     pub jwt_priv: String,
 }
 
-#[serde(rename_all = "camelCase")]
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct DbOptions {
     timeout: u64,
     #[serde(default)]
