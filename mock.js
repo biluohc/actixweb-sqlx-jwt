@@ -50,6 +50,7 @@ function now() {
   return (new Date()).toISOString("en-Us");
 }
 
+// https://deno.land/manual/getting_started/first_steps
 const api = `http://${options.host}:${options.port}/`;
 
 // curl -v 0.0.0.0:8000/
