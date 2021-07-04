@@ -3,6 +3,14 @@
 1. `mod.js` server
 1. `mock.js` test
 
+### [Compiling Executables](https://deno.land/manual@v1.7.4/tools/compiler)
+
+```sh
+deno compile --unstable --allow-net --allow-read=./ --allow-run mod.js
+
+deno compile --unstable --allow-net --allow-read=./ --allow-run mock.js
+```
+
 ### References
 
 1. deno: https://deno.land
