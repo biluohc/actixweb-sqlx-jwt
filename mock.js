@@ -4,7 +4,7 @@ exec deno test --unstable --allow-net --allow-read=./ --allow-run "$0" "$@"
 */
 
 // can't run on linux, https://qastack.cn/unix/63979/shebang-line-with-usr-bin-env-command-argument-fails-on-linux
-/// #!/usr/bin/env deno run --unstable --allow-net --allow-read=./ --allow-run
+/// #!/usr/bin/env deno test --unstable --allow-net --allow-read=./ --allow-run
 
 import { Command } from "https://deno.land/x/cliffy@v0.19.2/command/mod.ts";
 import * as Colors from "https://deno.land/std@0.100.0/fmt/colors.ts";
@@ -20,8 +20,11 @@ import {
   assertStringIncludes,
 } from "https://deno.land/std@0.100.0/testing/asserts.ts";
 
+let debug = false;
 console.debug = function (...msg) {
-  console.log(Colors.blue("[DEBU]"), now(), ...msg);
+  if (debug) {
+    console.log(Colors.blue("[DEBU]"), now(), ...msg);
+  }
 };
 console.info = function (...msg) {
   console.log(Colors.green("[INFO]"), now(), ...msg);
@@ -37,12 +40,14 @@ const { options, args } = await new Command()
   .name("md5t")
   .version("0.0.0")
   .description("md5 api tester")
-  .helpOption(" -H, --help", "Print help info.", { global: true })
+  .helpOption("-H, --help", "Print help info.", { global: true })
+  .option("-d, --debug", "Print debug info.", { global: true })
   .option("-p, --port <port:integer>", "the port number.", { default: 8000 })
   .option("-h, --host [hostname]", "the host name.", { default: "127.0.0.1" })
   .arguments("[input...:string]", "input strings.")
   .parse(Deno.args);
 options["args"] = args[0] ?? [];
+debug = options.debug;
 
 console.debug("options: ", options);
 

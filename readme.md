@@ -1,14 +1,15 @@
 ## md5 api server
 
-1. `mod.js` server
-1. `mock.js` test
+1. mod.js server
+`./mod.js -d`
+
+2. mock.js test: 
+`./mock.js -- -d`
 
 ### [Compiling Executables](https://deno.land/manual@v1.7.4/tools/compiler)
 
 ```sh
-deno compile --unstable --allow-net --allow-read=./ --allow-run mod.js
-
-deno compile --unstable --allow-net --allow-read=./ --allow-run mock.js
+deno compile --unstable --allow-net --allow-read=./ --allow-run -o mod mod.js
 ```
 
 ### References

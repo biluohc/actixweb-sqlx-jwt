@@ -1,4 +1,5 @@
 actixweb-sqlx-jwt
+mod
 mock
 target
 .idea

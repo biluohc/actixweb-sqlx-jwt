@@ -17,8 +17,11 @@ import {
   STATUS_TEXT,
 } from "https://deno.land/x/oak@v7.7.0/mod.ts";
 
+let debug = false;
 console.debug = function (...msg) {
-  console.log(Colors.blue("[DEBU]"), now(), ...msg);
+  if (debug) {
+    console.log(Colors.blue("[DEBU]"), now(), ...msg);
+  }
 };
 console.info = function (...msg) {
   console.log(Colors.green("[INFO]"), now(), ...msg);
@@ -34,12 +37,14 @@ const { options, args } = await new Command()
   .name("md5s")
   .version("0.0.0")
   .description("md5 api server")
-  .helpOption(" -H, --help", "Print help info.", { global: true })
+  .helpOption("-H, --help", "Print help info.", { global: true })
+  .option("-d, --debug", "Print debug info.", { global: true })
   .option("-p, --port <port:integer>", "the port number.", { default: 8000 })
   .option("-h, --host [hostname]", "the host name.", { default: "127.0.0.1" })
   .arguments("[input...:string]", "input strings.")
   .parse(Deno.args);
 options["args"] = args[0] ?? [];
+debug = options.debug;
 
 console.debug("options: ", options);
 
