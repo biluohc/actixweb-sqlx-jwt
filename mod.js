@@ -84,8 +84,7 @@ async function md5json(input) {
 }
 
 if (options.args.length > 0) {
-  for (const idx in options.args) {
-    const arg = options.args[idx];
+  for (const arg of options.args) {
     console.info(`'${arg}':`, await md5(arg));
   }
   Deno.exit(0);
@@ -102,10 +101,8 @@ app.use(async (ctx, next) => {
   ctx.response.headers.set("X-Response-Time", `${rt}ms`);
 
   console.info(
-    `${ctx.request.ip} ${
-      Colors.bold(ctx.request.method)
-    } ${ctx.request.url} ${ctx._api.code}/${
-      Colors.bold("" + ctx.response.status)
+    `${ctx.request.ip} ${Colors.bold(ctx.request.method)
+    } ${ctx.request.url} ${ctx._api.code}/${Colors.bold("" + ctx.response.status)
     } '${ctx._api.msg}' - ${rt}ms`,
   );
 });
@@ -140,8 +137,7 @@ app.use(async (ctx, next) => {
     await next();
   } catch (err) {
     console.error(
-      `${ctx.request.ip} ${
-        Colors.bold(ctx.request.method)
+      `${ctx.request.ip} ${Colors.bold(ctx.request.method)
       } ${ctx.request.url} ${ctx.response.status.toString()}: ${err}`,
     );
   } finally {
@@ -193,7 +189,7 @@ app.use(router.allowedMethods());
 app.addEventListener("listen", ({ hostname, port, secure }) => {
   console.warn(
     `Listening on: ${secure ? "https://" : "http://"}${hostname ??
-      "localhost"}:${port}`,
+    "localhost"}:${port}`,
   );
 });
 await app.listen({ port: options.port, hostname: options.host });
