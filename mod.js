@@ -6,8 +6,8 @@ exec deno run --unstable --allow-net --allow-read=./ --allow-run "$0" "$@"
 // can't run on linux, https://qastack.cn/unix/63979/shebang-line-with-usr-bin-env-command-argument-fails-on-linux
 /// #!/usr/bin/env deno run --unstable --allow-net --allow-read=./ --allow-run
 
-import { Command } from "https://deno.land/x/cliffy@v0.19.2/command/mod.ts";
-import * as Colors from "https://deno.land/std@0.100.0/fmt/colors.ts";
+import { Command } from "https://deno.land/x/cliffy@v0.19.5/command/mod.ts";
+import * as Colors from "https://deno.land/std@0.105.0/fmt/colors.ts";
 import {
   Application,
   isErrorStatus,
@@ -15,7 +15,7 @@ import {
   send,
   Status,
   STATUS_TEXT,
-} from "https://deno.land/x/oak@v7.7.0/mod.ts";
+} from "https://deno.land/x/oak@v9.0.1/mod.ts";
 
 let debug = false;
 console.debug = function (...msg) {

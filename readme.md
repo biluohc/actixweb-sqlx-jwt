@@ -16,7 +16,7 @@ deno compile --unstable --allow-net --allow-read=./ --allow-run -o mod mod.js
 
 1. deno: https://deno.land
 1. dvm: https://github.com/justjavac/dvm
-1. oka: https://github.com/oakserver/oak
+1. oak: https://github.com/oakserver/oak
 1. cliffy: https://github.com/c4spar/deno-cliffy
 1. awesome-deno: https://github.com/denolib/awesome-deno
 2. bench: https://github.com/denosaurs/bench

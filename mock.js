@@ -6,8 +6,8 @@ exec deno test --unstable --allow-net --allow-read=./ --allow-run "$0" "$@"
 // can't run on linux, https://qastack.cn/unix/63979/shebang-line-with-usr-bin-env-command-argument-fails-on-linux
 /// #!/usr/bin/env deno test --unstable --allow-net --allow-read=./ --allow-run
 
-import { Command } from "https://deno.land/x/cliffy@v0.19.2/command/mod.ts";
-import * as Colors from "https://deno.land/std@0.100.0/fmt/colors.ts";
+import { Command } from "https://deno.land/x/cliffy@v0.19.5/command/mod.ts";
+import * as Colors from "https://deno.land/std@0.104.0/fmt/colors.ts";
 import {
   assert,
   assertArrayIncludes,
@@ -18,7 +18,7 @@ import {
   assertNotMatch,
   assertStrictEquals,
   assertStringIncludes,
-} from "https://deno.land/std@0.100.0/testing/asserts.ts";
+} from "https://deno.land/std@0.104.0/testing/asserts.ts";
 
 let debug = false;
 console.debug = function (...msg) {
