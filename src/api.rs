@@ -2,7 +2,8 @@ use serde::Serialize;
 use std::borrow::Cow;
 
 use actix_web::{
-    error, http::StatusCode, Error, HttpRequest, HttpResponse, Responder, ResponseError,
+    body::BoxBody, error, http::StatusCode, Error, HttpRequest, HttpResponse, Responder,
+    ResponseError,
 };
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -89,6 +90,8 @@ where
     T: Serialize,
     R: AsRef<ApiResult<T>>,
 {
+    type Body = BoxBody;
+
     fn respond_to(self, req: &HttpRequest) -> HttpResponse {
         match self {
             ApiRt::Ref(a) => a.as_ref().respond_to(req),
@@ -98,11 +101,15 @@ where
 }
 
 impl<T: Serialize> Responder for ApiResult<T> {
+    type Body = BoxBody;
+
     fn respond_to(self, req: &HttpRequest) -> HttpResponse {
         (&self).respond_to(req)
     }
 }
 impl<T: Serialize> Responder for &ApiResult<T> {
+    type Body = BoxBody;
+
     fn respond_to(self, req: &HttpRequest) -> HttpResponse {
         self.log_to_resp(req)
     }

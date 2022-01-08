@@ -15,6 +15,7 @@ type SqlID = u64;
 #[cfg(any(feature = "postgres", feature = "sqlite"))]
 type SqlID = i64;
 
+// https://docs.rs/sqlx/0.5.7/sqlx/trait.FromRow.html
 // Extend derive(FromRow): https://github.com/launchbadge/sqlx/issues/156
 type SqlDateTime = chrono::NaiveDateTime;
 

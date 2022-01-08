@@ -11,8 +11,8 @@ create table users (
 );
 
 
--- docker container run --name mysql-demo -p 3306:3306 -e MYSQL_ROOT_PASSWORD=MTcwNzUyNzIzMDY4Nzk2MzQ3Mjg= -d mysql:5.7
--- docker container exec -it  mysql-demo  /bin/bash
+-- docker run -d --restart always --name mysql-demo -p 3306:3306 -e MYSQL_ROOT_PASSWORD=MTcwNzUyNzIzMDY4Nzk2MzQ3Mjg= -d mysql:5.7
+-- docker exec -it  mysql-demo  /bin/bash
 -- mysql -u root -pMTcwNzUyNzIzMDY4Nzk2MzQ3Mjg=
 -- grant all privileges on *.* to 'root'@'%' identified by '[password]';
 -- select host, user, authentication_string from user;

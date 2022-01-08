@@ -20,7 +20,6 @@ pub struct AuthorizationService {
 impl FromRequest for AuthorizationService {
     type Error = ApiError;
     type Future = Ready<Result<AuthorizationService, Self::Error>>;
-    type Config = ();
 
     // 1. header: Authorization: Bearer xxx
     // 2. URL's query: ?access_token=xxx

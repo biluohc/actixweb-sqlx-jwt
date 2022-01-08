@@ -12,7 +12,7 @@ create table users (
 
 -- COMMENT ON COLUMN "users"."pass" IS 'passwd hash'
 
--- docker run -it -d --name postgresql -e POSTGRES_USER=template -e POSTGRES_DB=templatedb  -e POSTGRES_PASSWORD=MTcwNzUyNzIzMDY4Nzk2MzQ3Mjg= -p 5432:5432  postgres:12
+-- docker run -d --restart always --name pg-demo -e POSTGRES_USER=template -e POSTGRES_DB=templatedb  -e POSTGRES_PASSWORD=MTcwNzUyNzIzMDY4Nzk2MzQ3Mjg= -p 5432:5432  postgres:14
 
 -- libpg-dev/postgresql-devel
 -- pip3 install pgcli

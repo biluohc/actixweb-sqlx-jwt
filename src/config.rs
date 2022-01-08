@@ -95,7 +95,7 @@ pub fn version_with_gitif() -> &'static str {
     )
 }
 
-#[derive(clap::Clap, Debug)]
+#[derive(clap::Parser, Debug)]
 // #[clap(name = "template")]
 #[clap(version = version_with_gitif())]
 pub struct Opts {
@@ -116,7 +116,7 @@ pub struct Opts {
 
 impl Opts {
     pub fn parse_from_args() -> (JoinHandle, Self) {
-        use clap::Clap;
+        use clap::Parser;
         let opt: Self = Opts::parse();
 
         let level = match opt.verbose {
