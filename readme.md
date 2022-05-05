@@ -50,3 +50,8 @@ docker run --name redis-6379 --network host -d redis redis-server --port 6379 --
 2. actix-web-jwt with mongodb: https://github.com/emreyalvac/actix-web-jwt
 2. actix-examples: https://github.com/actix/examples
 2. an instance: https://github.com/biluohc/KeepStats
+3. ormx: https://github.com/NyxCode/ormx
+3. sea-orm: https://github.com/SeaQL/sea-orm
+3. sea-query: https://github.com/SeaQL/sea-query
+4. Prisma Client Rust: https://github.com/Brendonovich/prisma-client-rust
+
