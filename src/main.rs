@@ -2,8 +2,8 @@
 extern crate nonblock_logger;
 #[macro_use]
 extern crate async_trait;
-// #[macro_use]
-// extern crate anyhow;
+#[macro_use]
+extern crate validator;
 #[macro_use]
 extern crate sqlx;
 #[macro_use]
@@ -48,7 +48,7 @@ async fn main() -> std::io::Result<()> {
                     .use_last_modified(true),
             )
     })
-    .keep_alive(300)
+    .keep_alive(std::time::Duration::from_secs(300))
     .bind(&state2.config.listen)?
     .run()
     .await

@@ -5,11 +5,17 @@ use crate::middlewares::auth::AuthorizationService;
 use crate::state::AppState;
 
 use actix_web::{get, post, web, HttpRequest, Responder};
+use validator::Validate;
 
 // curl -v --data '{"name": "Bob", "email": "Bob@google.com", "password": "Bobpass"}' -H "Content-Type: application/json" -X POST localhost:8080/user/register
 #[post("/register")]
 async fn register(form: web::Json<Register>, state: AppState) -> impl Responder {
     let form = form.into_inner();
+
+    if let Err(e) = form.validate() {
+        error!("regitser {:?} error: {:?}", form, e);
+        return ApiResult::new().code(400).with_msg(e.to_string());
+    }
 
     match state.user_add(&form).await {
         Ok(res) => {

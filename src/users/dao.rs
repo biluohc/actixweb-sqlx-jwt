@@ -7,6 +7,7 @@ use crate::state::AppState;
 pub trait IUser {
     async fn user_add(&self, form: &Register) -> sqlx::Result<u64>;
     async fn user_query(&self, name: &str) -> sqlx::Result<User>;
+    async fn user_delete(&self, name_or_email: &str) -> sqlx::Result<u64>;
 }
 
 #[cfg(any(feature = "mysql", feature = "sqlite"))]
@@ -41,6 +42,14 @@ impl IUser for AppState {
         .fetch_one(&self.sql)
         .await
     }
+    async fn user_delete(&self, name_or_email: &str) -> sqlx::Result<u64> {
+        sqlx::query("update users set status='deleted' where name=? or email=?;")
+            .bind(name_or_email)
+            .bind(name_or_email)
+            .fetch_one(&self.sql)
+            .await
+            .map(|d| d.rows_affected())
+    }
 }
 
 #[cfg(any(feature = "postgres"))]
@@ -74,5 +83,12 @@ impl IUser for AppState {
         )
         .fetch_one(&self.sql)
         .await
+    }
+    async fn user_delete(&self, name_or_email: &str) -> sqlx::Result<u64> {
+        sqlx::query("update users set status='deleted' where name=$1 or email=$1;")
+            .bind(name_or_email)
+            .fetch_one(&self.sql)
+            .await
+            .map(|d| d.rows_affected())
     }
 }

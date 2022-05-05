@@ -53,11 +53,22 @@ pub struct Claims {
     pub exp: usize,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Validate)]
 pub struct Register {
+    #[validate(length(min = 3, max = 33), custom = "validate_username")]
     pub name: String,
+    #[validate(email)]
     pub email: String,
     pub password: String,
+}
+
+use validator::ValidationError;
+fn validate_username(username: &str) -> Result<(), ValidationError> {
+    if username.contains("@") {
+        // the value of the username will automatically be added later
+        return Err(ValidationError::new("terrible_username"));
+    }
+    Ok(())
 }
 
 impl Register {

@@ -54,4 +54,4 @@ docker run --name redis-6379 --network host -d redis redis-server --port 6379 --
 3. sea-orm: https://github.com/SeaQL/sea-orm
 3. sea-query: https://github.com/SeaQL/sea-query
 4. Prisma Client Rust: https://github.com/Brendonovich/prisma-client-rust
-
+5. validator: https://docs.rs/validator
