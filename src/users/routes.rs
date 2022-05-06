@@ -4,7 +4,7 @@ use crate::api::ApiResult;
 use crate::middlewares::auth::AuthorizationService;
 use crate::state::AppState;
 
-use actix_web::{get, post, web, HttpRequest, Responder};
+use actix_web::{delete as del, get, post, web, Responder};
 use validator::Validate;
 
 // curl -v --data '{"name": "Bob", "email": "Bob@google.com", "password": "Bobpass"}' -H "Content-Type: application/json" -X POST localhost:8080/user/register
@@ -17,7 +17,7 @@ async fn register(form: web::Json<Register>, state: AppState) -> impl Responder 
         return ApiResult::new().code(400).with_msg(e.to_string());
     }
 
-    match state.user_add(&form).await {
+    match state.get_ref().user_add(&form).await {
         Ok(res) => {
             info!("register {:?} res: {}", form, res);
             ApiResult::new().with_msg("ok").with_data(res)
@@ -37,7 +37,8 @@ async fn login(form: web::Json<Login>, state: AppState) -> impl Responder {
     use chrono::{DateTime, Duration, Utc};
     use jsonwebtoken::{encode, EncodingKey, Header};
 
-    match state.user_query(&form.name).await {
+    // todo: distable login for deleted and blocked users
+    match state.get_ref().user_query(&form.name).await {
         Ok(user) => {
             info!("find user {:?} ok: {:?}", form, user);
 
@@ -73,22 +74,90 @@ async fn login(form: web::Json<Login>, state: AppState) -> impl Responder {
     }
 }
 
-// curl -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJCb2IiLCJleHAiOjE1OTEyNDYwOTR9.O1dbYu3tqiIi6I8OUlixLuj9dp-1tLl4mjmXZ0ve6uo' localhost:8080/user/userInfo |jq .
+// curl -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJCb2IiLCJleHAiOjE1OTEyNDYwOTR9.O1dbYu3tqiIi6I8OUlixLuj9dp-1tLl4mjmXZ0ve6uo' localhost:8080/user/info/who |jq .
 // curl 'localhost:8080/user/userInfo?access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJCb2IiLCJleHAiOjE1OTEyNTYxNDd9.zJKlZOozYfq-xMXO89kjUyme6SA8_eziacqt5gvXj2U' |jq .
-#[get("/userInfo")]
-async fn user_informations(
-    _req: HttpRequest,
+#[get("/info/{who}")]
+async fn info(
+    form: web::Path<String>,
     auth: AuthorizationService,
     state: AppState,
 ) -> impl Responder {
-    match state.user_query(&auth.claims.sub).await {
+    let who = form.into_inner();
+    let w = who.as_str();
+
+    // me
+    let user = match state.get_ref().user_query(&auth.claims.sub).await {
         Ok(user) => {
             debug!("find user {:?} ok: {:?}", auth.claims, user);
-            ApiResult::new().with_data(user)
+
+            if who == "_"
+                || [
+                    user.id.to_string().as_str(),
+                    user.name.as_str(),
+                    user.email.as_str(),
+                ]
+                .contains(&w)
+            {
+                return ApiResult::new().with_msg("ok").with_data(user);
+            }
+
+            user
         }
         Err(e) => {
             error!("find user {:?} error: {:?}", auth.claims, e);
+            return ApiResult::new().code(500).with_msg(e.to_string());
+        }
+    };
+
+    // todo: add role(admin, user, guest)
+    if user.status != "normal" {
+        return ApiResult::new().code(403);
+    }
+
+    match state.get_ref().user_query(w).await {
+        Ok(user) => {
+            debug!("find user {:?} ok: {:?}", w, user);
+            ApiResult::new().with_msg("ok").with_data(user)
+        }
+        Err(e) => {
+            error!("find user {:?} error: {:?}", w, e);
             ApiResult::new().code(500).with_msg(e.to_string())
+        }
+    }
+}
+
+// curl -v -X DELETE localhost:8080/user/who
+#[del("/delete/{who}")]
+async fn delete(
+    form: web::Path<String>,
+    auth: AuthorizationService,
+    state: AppState,
+) -> impl Responder {
+    let user = match state.get_ref().user_query(&auth.claims.sub).await {
+        Ok(user) => user,
+        Err(e) => {
+            error!("find user {:?} error: {:?}", auth.claims, e);
+            return ApiResult::new().code(500).with_msg(e.to_string());
+        }
+    };
+
+    // todo: add role(admin, user, guest)
+    if user.status != "normal" {
+        return ApiResult::new().code(403);
+    }
+
+    let who = form.into_inner();
+    match state.get_ref().user_delete(&who).await {
+        Ok(res) => {
+            info!(
+                "delete {:?} res: {} {} {} {}",
+                who, res.id, res.name, res.email, res.status
+            );
+            ApiResult::new().with_msg("ok").with_data(res)
+        }
+        Err(e) => {
+            error!("delete {:?} error: {:?}", who, e);
+            ApiResult::new().code(400).with_msg(e.to_string())
         }
     }
 }
@@ -96,5 +165,6 @@ async fn user_informations(
 pub fn init(cfg: &mut web::ServiceConfig) {
     cfg.service(login);
     cfg.service(register);
-    cfg.service(user_informations);
+    cfg.service(delete);
+    cfg.service(info);
 }

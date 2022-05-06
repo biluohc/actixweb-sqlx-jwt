@@ -28,10 +28,10 @@ function test(kind::String)
         @test length(jwt) > 100
 
         authead = "Authorization: Bearer $jwt"
-        code = read(pipeline(`curl -sH $authead localhost:8080/user/userInfo`, `jq -r .code`), String) |> strip
+        code = read(pipeline(`curl -sH $authead localhost:8080/user/info/_`, `jq -r .code`), String) |> strip
         @test code == "200"
 
-        authuri = "localhost:8080/user/userInfo?access_token=$jwt"
+        authuri = "localhost:8080/user/info/_?access_token=$jwt"
         code = read(pipeline(`curl -s $authuri`, `jq -r .code`), String) |> strip
         @test code == "200"
     catch e
@@ -68,5 +68,5 @@ function test_and_checkout(kind::String)
 end
 
 test_and_checkout("mysql")
-test_and_checkout("postgres")
 test_and_checkout("sqlite")
+test_and_checkout("postgres")

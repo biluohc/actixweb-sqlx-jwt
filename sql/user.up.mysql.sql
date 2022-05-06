@@ -7,7 +7,7 @@ create table users (
     pass char(65) not null comment 'passwd hash',
     create_dt datetime(3) not null default current_timestamp(3) comment 'create datetime',
     update_dt datetime(3) not null default current_timestamp(3) on update current_timestamp(3) comment 'update datetime',
-    status char(10) not null default 'nomal' comment 'status: normal, blocked, deleted'
+    status char(10) not null default 'normal' comment 'status: normal, blocked, deleted'
 );
 
 

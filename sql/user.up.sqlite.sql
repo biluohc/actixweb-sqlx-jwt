@@ -8,7 +8,7 @@ create table users (
     pass char(65) not null, -- 'passwd hash'
     create_dt datetime not null default (datetime('now','localtime')), -- 'create datetime'
     update_dt datetime not null default (datetime('now','localtime')), -- 'update datetime'
-    status char(10) not null default 'nomal' -- comment 'status: normal, blocked, deleted'
+    status char(10) not null default 'normal' -- comment 'status: normal, blocked, deleted'
 );
 
 -- https://www.sqlite.org/quirks.html

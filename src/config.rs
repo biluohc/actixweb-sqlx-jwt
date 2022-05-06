@@ -135,7 +135,14 @@ impl Opts {
             .starts_with(true)
             .notfound(true)
             .max_level(level)
-            .chain("sqlx", LevelFilter::Warn);
+            .chain(
+                "sqlx",
+                if opt.verbose > 1 {
+                    LevelFilter::Debug
+                } else {
+                    LevelFilter::Warn
+                },
+            );
 
         let handle = NonblockLogger::new()
             .filter(filter)

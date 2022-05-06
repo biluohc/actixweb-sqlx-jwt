@@ -7,7 +7,7 @@ create table users (
     pass varchar(65) not null, -- 'passwd hash'
     create_dt timestamp not null default current_timestamp, -- 'create datetime'
     update_dt timestamp not null default current_timestamp, -- 'udpate datetime'
-    status varchar(10) not null default 'nomal'-- comment 'status: normal, blocked, deleted',
+    status varchar(10) not null default 'normal'-- comment 'status: normal, blocked, deleted',
 );
 
 -- COMMENT ON COLUMN "users"."pass" IS 'passwd hash'

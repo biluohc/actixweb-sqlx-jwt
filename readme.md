@@ -18,6 +18,8 @@ curl -v --data '{"name": "Bob", "email": "Bob@google.com", "password": "Bobpass"
 
 curl -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJCb2IiLCJleHAiOjE1OTEyNDYwOTR9.O1dbYu3tqiIi6I8OUlixLuj9dp-1tLl4mjmXZ0ve6uo' localhost:8080/user/userInfo
 
+curl -v -X DELETE -H 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJCb2IiLCJleHAiOjE1OTEyNDYwOTR9.O1dbYu3tqiIi6I8OUlixLuj9dp-1tLl4mjmXZ0ve6uo' localhost:8080/user/delete/Bob 
+
 curl 'localhost:8080/user/userInfo?access_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJCb2IiLCJleHAiOjE1OTEyNTYxNDd9.zJKlZOozYfq-xMXO89kjUyme6SA8_eziacqt5gvXj2U'
 ```
 6. Modify the code and write your own code, enjoy.
@@ -55,3 +57,4 @@ docker run --name redis-6379 --network host -d redis redis-server --port 6379 --
 3. sea-query: https://github.com/SeaQL/sea-query
 4. Prisma Client Rust: https://github.com/Brendonovich/prisma-client-rust
 5. validator: https://docs.rs/validator
+6. axum: https://github.com/tokio-rs/axum

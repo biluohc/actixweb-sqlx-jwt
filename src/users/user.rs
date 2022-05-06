@@ -28,6 +28,7 @@ pub struct User {
     // not return password
     #[serde(skip_serializing)]
     pub pass: String,
+    pub status: String,
     pub create_dt: SqlDateTime,
     pub update_dt: SqlDateTime,
 }
@@ -64,10 +65,18 @@ pub struct Register {
 
 use validator::ValidationError;
 fn validate_username(username: &str) -> Result<(), ValidationError> {
+    // todo: use regex for robust
+    if first_char_is_number(username) {
+        return Err(ValidationError::new(
+            "terrible_username: first char is number",
+        ));
+    }
+
     if username.contains("@") {
         // the value of the username will automatically be added later
-        return Err(ValidationError::new("terrible_username"));
+        return Err(ValidationError::new("terrible_username: contains @"));
     }
+
     Ok(())
 }
 
@@ -75,4 +84,8 @@ impl Register {
     pub fn passhash(&self) -> String {
         passhash(&self.name, &self.password)
     }
+}
+
+pub fn first_char_is_number(s: &str) -> bool {
+    s.get(0..1).and_then(|c| c.parse::<u8>().ok()).is_some()
 }
