@@ -1,5 +1,5 @@
 use super::dao::IUser;
-use super::user::{Claims, Login, Register};
+use super::user::{Claims, Login, Register, UserAddress};
 use crate::api::ApiResult;
 use crate::middlewares::auth::AuthorizationService;
 use crate::state::AppState;
@@ -162,9 +162,85 @@ async fn delete(
     }
 }
 
+#[post("/address")]
+async fn user_address(form: web::Json<UserAddress>, state: AppState) -> impl Responder {
+    let form = form.into_inner();
+    match state.get_ref().adress_query(&form.share_address.clone()).await {
+        Ok(addex) => {
+            let mut addres :i16 = addex.experience.parse::<i16>().unwrap();
+            addres = addres + 1;
+            match state.get_ref().adress_update(&form.share_address.clone(), &addres.to_string()).await {
+                Ok(res) => {
+                    ApiResult::new().with_msg("ok").with_data(res)
+                }
+                Err(e) => {
+                    ApiResult::new().code(400).with_msg(e.to_string())
+                }
+            };
+        },
+        Err(_) => {
+            print!("no find address");
+        }
+    };
+
+    match state.get_ref().adress_add(&form.share_address, "1").await {
+        Ok(res) => {
+            ApiResult::new().with_msg("ok").with_data(res)
+        }
+        Err(e) => {
+            ApiResult::new().code(400).with_msg(e.to_string())
+        }
+    }
+}
+/*
+#[post("/email")]
+async fn post_email(form: web::Json<Email>, state: AppState) -> impl Responder {
+    let form = form.into_inner();
+
+    use chrono::{DateTime, Duration, Utc};
+    use jsonwebtoken::{encode, EncodingKey, Header};
+
+    match state.get_ref().user_query(&form.email_address).await {
+        Ok(user) => {
+            info!("find user {:?} ok: {:?}", form, user);
+
+            if form.verify(&user.pass) {
+                let exp: DateTime<Utc> = Utc::now()
+                    + if form.rememberme {
+                    Duration::days(30)
+                } else {
+                    Duration::hours(1)
+                };
+
+                let my_claims = Claims {
+                    sub: user.name,
+                    exp: exp.timestamp() as usize,
+                };
+                let key = state.config.jwt_priv.as_bytes();
+                let token = encode(
+                    &Header::default(),
+                    &my_claims,
+                    &EncodingKey::from_secret(key),
+                )
+                    .unwrap();
+
+                ApiResult::new().with_msg("ok").with_data(token)
+            } else {
+                ApiResult::new().code(403).with_msg("wrong pass or name")
+            }
+        }
+        Err(e) => {
+            error!("find user {:?} error: {:?}", form, e);
+            ApiResult::new().code(400).with_msg(e.to_string())
+        }
+    }
+}
+*/
+
 pub fn init(cfg: &mut web::ServiceConfig) {
     cfg.service(login);
     cfg.service(register);
     cfg.service(delete);
     cfg.service(info);
+    cfg.service(user_address);
 }

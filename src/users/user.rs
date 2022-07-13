@@ -33,6 +33,26 @@ pub struct User {
     pub update_dt: SqlDateTime,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct UserAddress {
+    pub share_address: String,
+    pub anonymous_address:String,
+    pub evm_anonymous_address:String,
+    pub transaction_id:u16,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Email {
+    pub email: String,
+    pub url:String,
+}
+
+#[derive(FromRow, Serialize, Deserialize, Debug)]
+pub struct AddressExperience{
+    pub address:String,
+    pub experience: String,
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Login {
     pub name: String,
