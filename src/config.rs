@@ -10,6 +10,10 @@ pub struct Config {
     pub redis: String,
     pub listen: String,
     pub jwt_priv: String,
+    pub request_rpc: String,
+    pub mail_post: String,
+    pub mail_password: String,
+    pub mail_smtp: String,
 }
 
 #[derive(Debug, Deserialize, PartialEq, Serialize)]
