@@ -11,9 +11,13 @@ pub struct Config {
     pub listen: String,
     pub jwt_priv: String,
     pub request_rpc: String,
+
+    //mail
     pub mail_post: String,
     pub mail_password: String,
     pub mail_smtp: String,
+    pub mail_key: String,
+    pub mail_domain:String,
 }
 
 #[derive(Debug, Deserialize, PartialEq, Serialize)]

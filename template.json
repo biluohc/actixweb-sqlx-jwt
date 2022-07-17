@@ -4,7 +4,11 @@
     "listen": "127.0.0.1:8082",
     "jwt_priv": "0xa06f853898a9dd4f32441a56879c52878f96c42730ed31c50e00",
     "request_rpc": "https://prod-forge.prod.findora.org:26657/tx?hash=",
+
+
     "mail_post": "marketing@columbus.finance",
     "mail_password": "Yelllowsub123@",
-    "mail_smtp": "smtp.126.com"
+    "mail_smtp": "smtp.126.com",
+    "mail_key": "key_11111111",
+    "mail_domain":"columbus.finance"
 }

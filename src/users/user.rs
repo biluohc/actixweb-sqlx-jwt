@@ -17,6 +17,12 @@ pub struct Email {
     pub url:String,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct QueryAll {
+    pub limit: i16,
+    pub offset:i16,
+}
+
 #[derive(FromRow, Serialize, Deserialize, Debug)]
 pub struct AddressExperience{
     pub address:String,
