@@ -1,8 +1,14 @@
 {
-    "sql": "mysql://root:MTcwNzUyNzIzMDY4Nzk2MzQ3Mjg=@sh1/templatedb?timeout=60&serverTimezone=Hongkong",
-    // "sql": "postgres://template:MTcwNzUyNzIzMDY4Nzk2MzQ3Mjg=@sh1:5432/templatedb?timeout=60&serverTimezone=Hongkong",
-    // "sql": "sqlite://./target/lite.db",
+    "sql": "postgres://guoqicheng:123456@127.0.0.1:5432/guoqicheng",
     "redis": "redis://127.0.0.1",
-    "listen": "0.0.0.0:8080",
-    "jwt_priv": "0xa06f853898a9dd4f32441a56879c52878f96c42730ed31c50e00"
+    "listen": "127.0.0.1:8082",
+    "jwt_priv": "0xa06f853898a9dd4f32441a56879c52878f96c42730ed31c50e00",
+    "request_rpc": "https://prod-forge.prod.findora.org:26657/tx?hash=",
+
+
+    "mail_post": "marketing@columbus.finance",
+    "mail_password": "Yelllowsub123@",
+    "mail_smtp": "smtp.126.com",
+    "mail_key": "key_11111111",
+    "mail_domain":"columbus.finance"
 }
